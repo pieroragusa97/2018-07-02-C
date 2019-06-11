@@ -91,4 +91,62 @@ public class ExtFlightDelaysDAO {
 			throw new RuntimeException("Error Connection Database");
 		}
 	}
+	
+	public int contaCompagnie(Airport a){
+		String sql = "SELECT COUNT(distinct(f.AIRLINE_ID)) as c\r\n" + 
+				"FROM flights f\r\n" + 
+				"WHERE f.ORIGIN_AIRPORT_ID=? OR f.DESTINATION_AIRPORT_ID=?\r\n" + 
+				"";
+		int conta=0;
+
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setInt(1, a.getId());
+			st.setInt(2, a.getId());
+			ResultSet rs = st.executeQuery();
+
+			while (rs.next()) {
+				conta+=rs.getInt("c");
+			}
+
+			conn.close();
+			return conta;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+	}
+	
+	public int contaVoli(Airport a1,Airport a2){
+		String sql = "SELECT COUNT(*) AS c\r\n" + 
+				"FROM flights f\r\n" + 
+				"WHERE (f.ORIGIN_AIRPORT_ID=? and f.DESTINATION_AIRPORT_ID=?)OR (f.ORIGIN_AIRPORT_ID=? and f.DESTINATION_AIRPORT_ID=?)\r\n" + 
+				"";
+		int conta=0;
+
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setInt(1, a1.getId());
+			st.setInt(2, a2.getId());
+			st.setInt(3, a2.getId());
+			st.setInt(4, a1.getId());
+			ResultSet rs = st.executeQuery();
+
+			while (rs.next()) {
+				conta+=rs.getInt("c");
+			}
+
+			conn.close();
+			return conta;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
+	}
 }
